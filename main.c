@@ -9,59 +9,55 @@ int validate_input(const char* text, const char* key) {
         printf("Text and key must not be empty.\n");
         return 0;
     }
-    for (int i = 0; i < strlen(text); i++) {
-        if (!isalpha(text[i])) {
-            printf("Text must contain only letters.\n");
-            return 0;
-        }
-    }
-    for (int i = 0; i < strlen(key); i++) {
-        if (!isalpha(key[i])) {
-            printf("Key must contain only letters.\n");
-            return 0;
-        }
-    }
     return 1;
 }
 
-// Teksto šifravimas Vigenere algoritmu
-char* vigenere_encrypt(const char* text, const char* key) {
+// Tik raidžių ir skaičių šifravimas Vigenere algoritmu
+char* vigenere_encrypt_letters_numbers(const char* text, const char* key) {
     int text_length = strlen(text);
     int key_length = strlen(key);
     char* encrypted = (char*)malloc((text_length + 1) * sizeof(char));
 
     for (int i = 0, j = 0; i < text_length; i++) {
         char c = text[i];
-        if (isupper(c)) {
-            encrypted[i] = (c + key[j % key_length] - 2 * 'A') % 26 + 'A';
+        if (isalpha(c)) {
+            if (isupper(c)) {
+                encrypted[i] = (c + key[j % key_length] - 2 * 'A') % 26 + 'A';
+            } else {
+                encrypted[i] = (c + key[j % key_length] - 2 * 'a') % 26 + 'a';
+            }
             j++;
-        } else if (islower(c)) {
-            encrypted[i] = (c + key[j % key_length] - 2 * 'a') % 26 + 'a';
+        } else if (isdigit(c)) {
+            encrypted[i] = (c + key[j % key_length] - 2 * '0') % 10 + '0';
             j++;
         } else {
-            encrypted[i] = c; // Ne raidiniai simboliai lieka nepakitę
+            encrypted[i] = c; // Ne raidės ir skaičiai lieka nepakitę
         }
     }
     encrypted[text_length] = '\0';
     return encrypted;
 }
 
-// Teksto dešifravimas Vigenere algoritmu
-char* vigenere_decrypt(const char* text, const char* key) {
+// Tik raidžių ir skaičių dešifravimas Vigenere algoritmu
+char* vigenere_decrypt_letters_numbers(const char* text, const char* key) {
     int text_length = strlen(text);
     int key_length = strlen(key);
     char* decrypted = (char*)malloc((text_length + 1) * sizeof(char));
 
     for (int i = 0, j = 0; i < text_length; i++) {
         char c = text[i];
-        if (isupper(c)) {
-            decrypted[i] = (c - key[j % key_length] + 26) % 26 + 'A';
+        if (isalpha(c)) {
+            if (isupper(c)) {
+                decrypted[i] = (c - key[j % key_length] + 26) % 26 + 'A';
+            } else {
+                decrypted[i] = (c - key[j % key_length] + 26) % 26 + 'a';
+            }
             j++;
-        } else if (islower(c)) {
-            decrypted[i] = (c - key[j % key_length] + 26) % 26 + 'a';
+        } else if (isdigit(c)) {
+            decrypted[i] = (c - key[j % key_length] + 10) % 10 + '0';
             j++;
         } else {
-            decrypted[i] = c; // Ne raidiniai simboliai lieka nepakitę
+            decrypted[i] = c; // Ne raidės ir skaičiai lieka nepakitę
         }
     }
     decrypted[text_length] = '\0';
@@ -85,12 +81,12 @@ int main() {
         return 1; // Išeinama, jei patikrinimas nepavyksta
     }
 
-    // Teksto šifravimas
-    char* encrypted = vigenere_encrypt(text, key);
+    // Teksto šifravimas tik raidėms ir skaičiams
+    char* encrypted = vigenere_encrypt_letters_numbers(text, key);
     printf("Encrypted text: %s\n", encrypted);
 
-    // Teksto dešifravimas
-    char* decrypted = vigenere_decrypt(encrypted, key);
+    // Teksto dešifravimas tik raidėms ir skaičiams
+    char* decrypted = vigenere_decrypt_letters_numbers(encrypted, key);
     printf("Decrypted text: %s\n", decrypted);
 
     // Atlaisvinama atmintis
